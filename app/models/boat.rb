@@ -24,15 +24,20 @@ class Boat < ActiveRecord::Base
   end
 
   def self.sailboats
-    y = self.all.select{|boat| boat.classifications.any?{|c| c.name == "Sailboat"}}
-    h = y.map{|x| x.name}
-    z = Boat.where({name: h})
+    # x = self.includes(:classifications).where({classifications: {:name => "Sailboat"}})
+    x = self.includes(:classifications).where("classifications.name = ?", "Sailboat")
+    # binding.pry
+    # y = self.all.select{|boat| boat.classifications.any?{|c| c.name == "Sailboat"}}
+    # h = y.map{|x| x.name}
+    # z = Boat.where({name: h})
   end
 
   def self.with_three_classifications
-    y = self.all.select{|boat| boat.classifications.count == 3}
-    h = y.map{|x| x.name}
-    z = Boat.where({name: h})
+    # x = self.includes(:classifications).where("classifications.count = ?", 3)
+      x = self.includes(:classifications).having("count(classifications.name) = ?", 3).group("boats.id")
+    # y = self.all.select{|boat| boat.classifications.count == 3}
+    # h = y.map{|x| x.name}
+    # z = Boat.where({name: h})
   end
 
 end
